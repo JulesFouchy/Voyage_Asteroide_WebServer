@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Go Left or Right</title>
+    <style>
+      body { font-family: sans-serif; text-align: center; padding: 2rem; }
+      button { font-size: 20px; margin: 10px; padding: 10px 20px; }
+      #messages { margin-top: 30px; max-width: 400px; margin-left: auto; margin-right: auto; text-align: left; }
+      .msg { padding: 5px; border-bottom: 1px solid #ddd; }
+    </style>
+  </head>
+  <body>
+    <h1>Click a Direction</h1>
+    <button onclick="sendMessage('left')">⬅️ Go Left</button>
+    <button onclick="sendMessage('right')">➡️ Go Right</button>
+
+    <h2>All Messages</h2>
+    <div id="messages"></div>
+
+    <script>
+      // Replace with your server's LAN IP if needed
+      const ws = new WebSocket("wss://voyage-asteroide-webserver.onrender.com");
+
+      ws.onopen = () => {
+        console.log("Connected to WebSocket server");
+      };
+
+      ws.onmessage = (event) => {
+        console.log(event)
+        const message = event.data;
+        const div = document.createElement("div");
+        div.className = "msg";
+        div.textContent = message;
+        document.getElementById("messages").appendChild(div);
+      };
+
+      function sendMessage(direction) {
+        ws.send(direction);
+      }
+    </script>
+  </body>
+</html>
