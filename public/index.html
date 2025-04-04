@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket Game</title>
+    <style>
+      body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+      button { font-size: 20px; margin: 10px; padding: 10px 20px; }
+    </style>
+  </head>
+  <body>
+    <h1>WebSocket Button Click Game</h1>
+    <button onclick="sendMessage('left')">⬅️ Go Left</button>
+    <button onclick="sendMessage('right')">➡️ Go Right</button>
+
+    <h2>Messages:</h2>
+    <div id="messages"></div>
+
+    <script>
+      const ws = new WebSocket("ws://localhost:3000");
+
+      ws.onopen = () => console.log("Connected to WebSocket Server");
+      ws.onmessage = (event) => {
+          const msgDiv = document.createElement("div");
+          msgDiv.textContent = `Received: ${event.data}`;
+          document.getElementById("messages").appendChild(msgDiv);
+      };
+
+      function sendMessage(direction) {
+          ws.send(direction);
+          console.log(`Sent: ${direction}`);
+      }
+    </script>
+  </body>
+</html>
