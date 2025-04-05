@@ -5,33 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Go Left or Right</title>
     <style>
-      body { font-family: sans-serif; text-align: center; padding: 2rem; }
-      button { font-size: 20px; margin: 10px; padding: 10px 20px; }
-      #messages { margin-top: 30px; max-width: 400px; margin-left: auto; margin-right: auto; text-align: left; }
-      .msg { padding: 5px; border-bottom: 1px solid #ddd; }
+      body {
+          font-family: sans-serif;
+          margin: 0;
+          height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #f7f7f7;
+      }
+
+      .container {
+          display: flex;
+          width: 100%;
+          height: 100%;
+      }
+
+      .button {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 24px;
+          color: white;
+          border: none;
+          cursor: pointer;
+          height: 100%;
+          transition: background-color 0.3s;
+      }
+
+      .left {
+          background-color: #bb6ad1;
+      }
+
+      .right {
+          background-color: #3682f4;
+      }
+
+      .button:hover {
+          opacity: 0.8;
+      }
+
+      #messages {
+          margin-top: 30px;
+          max-width: 400px;
+          margin-left: auto;
+          margin-right: auto;
+          text-align: left;
+      }
+
+      .msg {
+          padding: 5px;
+          border-bottom: 1px solid #ddd;
+      }
     </style>
   </head>
   <body>
-    <h1>Click a Direction</h1>
-    <button onclick="sendMessage('left')">⬅️ Go Left</button>
-    <button onclick="sendMessage('right')">➡️ Go Right</button>
-
-    <h2>All Messages</h2>
-    <div id="messages"></div>
+    <div class="container">
+      <button class="button left" onclick="sendMessage('left')">
+        ⬅️ GAUCHE
+      </button>
+      <button class="button right" onclick="sendMessage('right')">
+        ➡️ DROITE
+      </button>
+    </div>
 
     <script>
-          // Replace with your server's LAN IP if needed
+      // Establish WebSocket connection to the server
         //   const ws = new WebSocket("wss://voyage-asteroide-webserver.onrender.com");
           const ws = new WebSocket("ws://localhost:3000");
 
-          ws.onopen = () => {
-            console.log("Connected to WebSocket server");
-          };
+      ws.onopen = () => {
+          console.log("Connected to WebSocket server");
+      };
 
-          ws.onmessage = (event) => {
-            console.log(event)
-               if (event.data instanceof Blob) {
-              // Create a FileReader to read the Blob event.data
+      // Handle incoming messages from the server
+      ws.onmessage = (event) => {
+          const data = event.data;
+
+          // Check if the data is a Blob (binary data)
+          if (data instanceof Blob) {
+              // Create a FileReader to read the Blob data
               const reader = new FileReader();
 
               // Once the Blob is read, display the result as a string
@@ -41,24 +95,21 @@
               };
 
               // Read the Blob as text
-              reader.readAsText(event.data);
+              reader.readAsText(data);
           } else {
               // If it's already a string, directly display it
-              displayMessage(event.data);
+              displayMessage(data);
           }
-          };
-          function displayMessage(message) {
-            const div = document.createElement("div");
-            div.className = "msg";
-            div.textContent = message;
-            document.getElementById("messages").appendChild(div);
+      };
+
+      function displayMessage(message) {
+        console.log(message)
       }
 
-
-          function sendMessage(direction) {
-            console.log(direction)
-            ws.send(direction);
-          }
+      // Send direction (left/right) to the server
+      function sendMessage(direction) {
+          ws.send(direction);
+      }
     </script>
   </body>
 </html>
