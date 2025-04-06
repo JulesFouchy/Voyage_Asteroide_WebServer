@@ -59,7 +59,7 @@ app.get("/get_votes", (req, res) => {
 })
 
 app.get("/start_game", (req, res) => {
-  is_voting = true
+  is_voting = false
   votes = {}
   console.log("Starting game")
 })
