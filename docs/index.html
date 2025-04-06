@@ -5,59 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Go Left or Right</title>
     <style>
-      body {
-          font-family: sans-serif;
-          margin: 0;
-          height: 100vh;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background-color: #f7f7f7;
-      }
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f7f7f7;
+        }
 
-      .container {
-          display: flex;
-          width: 100%;
-          height: 100%;
-      }
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
 
-      .button {
-          flex: 1;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          font-size: 24px;
-          color: white;
-          border: none;
-          cursor: pointer;
-          height: 100%;
-          transition: background-color 0.3s;
-      }
+        .button {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            height: 100%;
+            transition: background-color 0.3s;
+        }
 
-      .left {
-          background-color: #bb6ad1;
-      }
+        .left {
+            background-color: #bb6ad1;
+        }
 
-      .right {
-          background-color: #3682f4;
-      }
+        .right {
+            background-color: #3682f4;
+        }
 
-      .button:hover {
-          opacity: 0.8;
-      }
+        .active {
+      font-size: 36px;
+      font-weight: bold;
+        }
+        .button:hover {
+            opacity: 1;
+        }
 
-      #messages {
-          margin-top: 30px;
-          max-width: 400px;
-          margin-left: auto;
-          margin-right: auto;
-          text-align: left;
-      }
+        #messages {
+            margin-top: 30px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
 
-      .msg {
-          padding: 5px;
-          border-bottom: 1px solid #ddd;
-      }
+        .msg {
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
     </style>
   </head>
   <body>
@@ -72,8 +76,8 @@
 
     <script>
       // Establish WebSocket connection to the server
-        //   const ws = new WebSocket("wss://voyage-asteroide-webserver.onrender.com");
-          const ws = new WebSocket("ws://localhost:3000");
+      const ws = new WebSocket("ws://voyage-asteroide-webserver.onrender.com");
+      let is_voting = false
 
       ws.onopen = () => {
           console.log("Connected to WebSocket server");
@@ -103,12 +107,43 @@
       };
 
       function displayMessage(message) {
-        console.log(message)
+          console.log(message);
+
+          // Reset buttons if "reset" event is received
+          if (message === "start") {
+             resetButtons();
+             is_voting = true
+         }
+         else  if (message === "stop") {
+              resetButtons();
+              is_voting = false
+          }
       }
 
-      // Send direction (left/right) to the server
+      // Add "active" class to the clicked button
       function sendMessage(direction) {
-          ws.send(direction);
+        if(!is_voting)
+        return
+          // Add "active" class to the clicked button
+          const button = direction === 'left' ? document.querySelector('.left') : document.querySelector('.right');
+          const otherButton = direction === 'left' ? document.querySelector('.right') : document.querySelector('.left');
+        if(button.classList.contains('active'))
+          button.classList.remove('active');
+        else
+          button.classList.add('active');
+          otherButton.classList.remove('active');
+
+          // Send the direction to the server
+          ws.send(document.querySelector('.left').classList.contains('active') ? "-1" : document.querySelector('.right').classList.contains('active') ? "1" : 0);
+      }
+
+      // Reset the buttons' highlight when "reset" is received from the server
+      function resetButtons() {
+        console.log("resetting")
+          const leftButton = document.querySelector('.left');
+          const rightButton = document.querySelector('.right');
+          leftButton.classList.remove('active');
+          rightButton.classList.remove('active');
       }
     </script>
   </body>

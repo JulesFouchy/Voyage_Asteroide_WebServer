@@ -45,6 +45,14 @@ wss.on("connection", (ws) => {
   })
 })
 
+function broadcast(message) {
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message)
+    }
+  })
+}
+
 app.get("/get_votes", (req, res) => {
   let left = 0
   let right = 0
@@ -62,11 +70,13 @@ app.get("/start_vote", (req, res) => {
   is_voting = true
   votes = {}
   console.log("Starting vote")
+  broadcast("start")
 })
 app.get("/stop_vote", (req, res) => {
   is_voting = false
   votes = {}
   console.log("Stopping vote")
+  broadcast("stop")
 })
 
 server.listen(3000, () =>
