@@ -58,12 +58,6 @@ app.get("/get_votes", (req, res) => {
   res.json({ left, right })
 })
 
-app.get("/start_game", (req, res) => {
-  is_voting = false
-  votes = {}
-  console.log("Starting game")
-})
-
 app.get("/start_vote", (req, res) => {
   is_voting = true
   votes = {}
