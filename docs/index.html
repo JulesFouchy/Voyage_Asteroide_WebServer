@@ -77,7 +77,7 @@
     <script>
       // Establish WebSocket connection to the server
       const ws = new WebSocket("ws://voyage-asteroide-webserver.onrender.com");
-      let is_voting = false
+      let is_voting = true
 
       ws.onopen = () => {
           console.log("Connected to WebSocket server");
